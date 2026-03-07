@@ -34,11 +34,25 @@ def add_buffer_img(img):
     if len(buffer["images"]) > 2:
         buffer["images"].pop(0)
 
+# We define a function to read the buffer text 
 def get_buffer_text():
     return buffer["objetos"]
 
+# We define a function to get the images from the buffer
 def get_buffer_images():
     return buffer["images"]
+
+
+# DEFINE JetsonNano Connection
+
+
+
+
+# DEFINE JetsonNano thread 1
+
+
+
+# DEFINE JetsonNano thread 2
 
 
 
