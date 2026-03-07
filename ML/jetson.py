@@ -27,6 +27,8 @@ def add_buffer_text(raw_string):
     if len(buffer["vectors"]) > 10:
         buffer["vectors"].pop(0) 
 
+
+
 def add_buffer_img(img):
 # We append the image as it comes from the Jetson Nano to the buffer
     buffer["images"].append(img, axis=0)
@@ -53,15 +55,32 @@ def compare_2_images():
 
 
 # DEFINE JetsonNano Connection
-
+"""
+Para esta funcion vamos a definir la conexion con TCP socket para poder pasar los datos del Jetson Nano para.S
+"""
 
 
 
 # DEFINE JetsonNano thread 1
-
+"""
+Definir el thread 1 donde vamos a poner el thread constante que seria recibir cada 100ms los vectores nuevos y actualizar al buffer
+"""
 
 
 # DEFINE JetsonNano thread 2
+"""
+Para el thread 2 va a ser que el usuario meta un query por medio de audio a el LLM y el thread 2 sera escuchar el query y poder 
+pasarselo al LLM con todo y la pregunta, el contexto  
+"""
 
+# DEFINE JetsonNano thread 3
+"""
+Para el thread 3 va a ser que el usuario pregunta "En donde estoy?" y el vamos a pedirle una imagen a la Nano por medio del tcp socket y 
+despues pasarle esta imagen al LLM junto con el contexto del buffer, la pregunta y la imagen actualizada 
+"""
 
-
+# DEFINE JetsonNano thread 4
+"""
+Para el thread 4 vamos a hacer que cuando llegue una imagen nueva al buffer, va a compararala con la imagen vieja, el LLM de vision y 
+si si hay muchos cambios como para describirlos o no
+"""
