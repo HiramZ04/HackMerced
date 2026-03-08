@@ -1,5 +1,6 @@
 import time
 from voice import speak
+import threading
 # TO DO 
 # [] Cuando tengamos la funcion speak( ) vamos a utilizarla para hablar la alerta 
 # [] Agregar funcionalidad para poder no pisar alertas y hacerlo por orden de prioridad
@@ -7,6 +8,9 @@ from voice import speak
 
 last_time_alert = {}
 global_priority = 99  # No one giving a alert
+
+priority_lock = threading.Lock() # We need to address what happens if they both threads access the global priority variable at the same time by accident
+# We need to lock who can access and that 
 
 # This is a priority list, so the current alert does not get interrupted by a weaker alert o byseversa
 PRIORITY = {
@@ -70,9 +74,13 @@ def alerts_constant(tipo, distancia): # We pass the parameter to the function on
 # If this log completes the full set of ifs WITH NO MATCH, then the human was not alerted so we put alerted value at False
 
     if msg:
-        global_priority = current_priority  # Since there is no higher priority task at the moment we take the global priority with our current thread
+        with priority_lock:
+            if current_priority > global_priority: # Another litte check
+                return
+            global_priority = current_priority  # Since there is no higher priority task at the moment we take the global priority with our current thread
         # so no task with lower priority can block us
         speak(msg)                          # speak() from voice.py speaks the message 
-        global_priority = 99               # Reset after speaking ONLY AFTER SPEAKING, another thread can be running in the back while this one is running
+        with priority_lock:
+            global_priority = 99               # Reset after speaking ONLY AFTER SPEAKING, another thread can be running in the back while this one is running
         last_time_alert[tipo] = now         # lAST ALERT FOR THIS TYPE OF OBJECT WAS AT THIS TIME (we save it)
-  
+   
