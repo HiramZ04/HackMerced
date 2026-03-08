@@ -2,7 +2,7 @@
 
 > An AI-powered assistive robot that guides visually impaired individuals in real time through voice, object detection, and environmental awareness.
 
-🌐 **Live Demo:** [link]
+🌐 **Live Demo:** [[link]](https://hack-merced-4iq2.vercel.app/)
 
 ---
 
