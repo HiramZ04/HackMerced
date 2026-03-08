@@ -2,6 +2,14 @@ from ollama import chat
 from ollama import ChatResponse
 from jetson import get_buffer_text
 
+"""
+## What is this file about? ##
+This file defines the LLMs we are using, the System prompt so it can answer as we want it for the visually-impaired individuals
+It also has a routing function with some keywords so we can route the user query to the VLM or the LLM depending on the request
+the user is making.
+"""
+
+
 
 # This system prompt is really important since it would actually help the model understand what is his function and not exceed certain word limits,
 # Setup the alerts that are not hardcoded without LLM and specify how to answer or give the alerts.

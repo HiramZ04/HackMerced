@@ -4,6 +4,14 @@ import threading
 import time
 import json
 
+"""
+## What is this file about? ##
+This file defines the buffer for vectors of information, images and all of the functions for the threads 
+and methods the robot is going to use, like auto add vectors to buffer, ask for image to JetNano, initialize connection 
+with JetNano, fulfill the user queries about text or images, etc. 
+"""
+
+
 # Define the buffer with the current context, the buffer is going to be fed every 100ms with a new vector of information from the Jetson Nano 
 # Trough TCP Socket which is great for low latency, buffer is a RAM memory variable which gets deleted. 
 buffer = {

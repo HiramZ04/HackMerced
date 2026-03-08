@@ -7,6 +7,13 @@ import io
 import os
 from piper.voice import PiperVoice
 
+"""
+## What is this file about? ##
+This file defines the 2 functions we are going to use for the voice and conversational capabilities, we use both a TTS
+and a STT, which would be text to audio and audio to text, since the user requests in audio we need to convert it to text
+and the text the LLM generates we have to reproduce it in audio since we are working with visually-impared individuals.
+"""
+
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

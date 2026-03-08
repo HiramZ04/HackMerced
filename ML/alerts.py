@@ -1,9 +1,16 @@
 import time
 from voice import speak
 import threading
-# TO DO 
-# [] Cuando tengamos la funcion speak( ) vamos a utilizarla para hablar la alerta 
-# [] Agregar funcionalidad para poder no pisar alertas y hacerlo por orden de prioridad
+
+
+"""
+## What is this file about? ##
+This file defines the hard-coded alerts we are using withouth the neccessity of an LLM, we rank them from priority, if we have an alert 
+speaking at the moment, we dont get it interrupted based in order of priority. We also use threading.Lock as same with the threads 
+in the Jetson.py because this thread is specially being called every 100ms so there is more possibility to actually hit a rat race 
+or try to modify the same resource at the same moment. We adress this with threading.  
+"""
+
 
 
 last_time_alert = {}
