@@ -35,9 +35,64 @@
 		currentSlide = index;
 	};
 
+	function animateCount(el: HTMLElement, target: number, prefix: string, suffix: string) {
+		const duration = 1200;
+		const startTime = performance.now();
+		const step = (now: number) => {
+			const progress = Math.min((now - startTime) / duration, 1);
+			const eased = 1 - Math.pow(1 - progress, 3);
+			const current = Math.floor(eased * target);
+			el.textContent = `${prefix}${current.toLocaleString()}${suffix}`;
+			if (progress < 1) requestAnimationFrame(step);
+		};
+		requestAnimationFrame(step);
+	}
+
 	onMount(() => {
 		const autoSlide = window.setInterval(nextSlide, 5000);
 
+		/* ── 1. Hero parallax scale ── */
+		const heroCarousel = document.querySelector<HTMLElement>('.hero-carousel');
+		const heroSection = document.querySelector<HTMLElement>('.hero');
+
+		const handleScroll = () => {
+			if (!heroCarousel || !heroSection) return;
+			const rect = heroSection.getBoundingClientRect();
+			const h = heroSection.offsetHeight;
+			if (rect.bottom <= 0) return;
+			const progress = Math.max(0, Math.min(1, -rect.top / h));
+			heroCarousel.style.transform = `scale(${1.05 - 0.05 * progress})`;
+		};
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		handleScroll();
+
+		/* ── 2. Hero content stagger ── */
+		const heroContent = document.querySelector<HTMLElement>('.hero-content');
+		const heroLines = document.querySelectorAll<HTMLElement>('.hero-line');
+		const heroLabel = document.querySelector<HTMLElement>('.hero .label');
+		const heroSub = document.querySelector<HTMLElement>('.hero-sub');
+		const heroNavEl = document.querySelector<HTMLElement>('.hero-nav');
+
+		const heroObserver = new IntersectionObserver(
+			(entries, obs) => {
+				for (const entry of entries) {
+					if (entry.isIntersecting) {
+						if (heroLabel) heroLabel.classList.add('is-visible');
+						heroLines.forEach((line, i) => {
+							setTimeout(() => line.classList.add('is-visible'), 150 + i * 100);
+						});
+						const linesDelay = 150 + heroLines.length * 100;
+						if (heroSub) setTimeout(() => heroSub.classList.add('is-visible'), linesDelay + 80);
+						if (heroNavEl) setTimeout(() => heroNavEl.classList.add('is-visible'), linesDelay + 180);
+						obs.unobserve(entry.target);
+					}
+				}
+			},
+			{ threshold: 0.1 }
+		);
+		if (heroContent) heroObserver.observe(heroContent);
+
+		/* ── 3. Scroll-reveal (Apple timing) ── */
 		const revealElements = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
 		const revealObserver = new IntersectionObserver(
 			(entries, observer) => {
@@ -50,12 +105,49 @@
 			},
 			{ threshold: 0.1, rootMargin: '0px 0px -6% 0px' }
 		);
-
 		for (const el of revealElements) revealObserver.observe(el);
+
+		/* ── 4. Heading scale-in ── */
+		const scaleElements = document.querySelectorAll<HTMLElement>('[data-scale-in]');
+		const scaleObserver = new IntersectionObserver(
+			(entries, obs) => {
+				for (const entry of entries) {
+					if (entry.isIntersecting) {
+						entry.target.classList.add('is-scaled');
+						obs.unobserve(entry.target);
+					}
+				}
+			},
+			{ threshold: 0.2, rootMargin: '0px 0px -5% 0px' }
+		);
+		for (const el of scaleElements) scaleObserver.observe(el);
+
+		/* ── 5. Number count-up ── */
+		const countElements = document.querySelectorAll<HTMLElement>('[data-count-up]');
+		const countObserver = new IntersectionObserver(
+			(entries, obs) => {
+				for (const entry of entries) {
+					if (entry.isIntersecting) {
+						const el = entry.target as HTMLElement;
+						const target = parseInt(el.dataset.countUp || '0', 10);
+						const prefix = el.dataset.countPrefix || '';
+						const suffix = el.dataset.countSuffix || '';
+						animateCount(el, target, prefix, suffix);
+						obs.unobserve(el);
+					}
+				}
+			},
+			{ threshold: 0.5 }
+		);
+		for (const el of countElements) countObserver.observe(el);
 
 		return () => {
 			window.clearInterval(autoSlide);
+			window.removeEventListener('scroll', handleScroll);
 			revealObserver.disconnect();
+			heroObserver.disconnect();
+			scaleObserver.disconnect();
+			countObserver.disconnect();
 		};
 	});
 </script>
@@ -87,10 +179,13 @@
 
 	<div class="hero-content">
 		<p class="label">Assistive Robotics</p>
-		<h1>Guiding mobility through<br /><em>intelligent&nbsp;robotics</em></h1>
+		<h1>
+			<span class="hero-line">Guiding mobility through</span><br />
+			<span class="hero-line"><em>intelligent&nbsp;robotics</em></span>
+		</h1>
 		<p class="hero-sub">
-			Safer, more confident movement in unfamiliar environments — powered by real-time obstacle
-			detection and AI-driven navigation.
+			Safer, more confident movement in unfamiliar environments powered by real-time obstacle
+			detection.
 		</p>
 		<nav class="hero-nav" aria-label="Jump to section">
 			<a href="#problem">Problem</a>
@@ -114,15 +209,29 @@
 	</div>
 </section>
 
+<!-- ─── DEMO ─── -->
+<section class="demo-section" id="demo">
+	<div class="demo-inner reveal" data-reveal>
+		<p class="label">Prototype demo</p>
+		<h2 data-scale-in>See it in action</h2>
+		<p>
+			Watch how the robot responds to obstacles and supports navigation in a real world scenario.
+		</p>
+		<div class="video-frame">
+			<div class="video-placeholder">Video preview area</div>
+		</div>
+	</div>
+</section>
+
 <!-- ─── PROBLEM ─── -->
 <section class="split split--img-right" id="problem">
 	<div class="split__text reveal" data-reveal>
 		<p class="label">The problem</p>
-		<h2>Mobility should not<br />depend on uncertainty</h2>
+		<h2 data-scale-in>Mobility should not<br />depend on uncertainty</h2>
 		<p>
 			Navigating unfamiliar environments is challenging and stressful for blind or visually
 			impaired individuals. Traditional aids leave gaps in spatial awareness that can compromise
-			safety—and independence.
+			safety and independence.
 		</p>
 	</div>
 	<div class="split__media split__media--png reveal" data-reveal style="--reveal-delay:120ms">
@@ -140,25 +249,11 @@
 	</div>
 	<div class="split__text reveal" data-reveal style="--reveal-delay:120ms">
 		<p class="label">How it works</p>
-		<h2>Detect. Decide.<br />Guide.</h2>
+		<h2 data-scale-in>Detect. Decide.<br />Guide.</h2>
 		<p>
 			The robot senses nearby obstacles in real time, analyzes the safest path, and provides
-			haptic and audio feedback to support guided mobility — no screen required.
+			haptic and audio feedback to support guided mobility with no screen required.
 		</p>
-	</div>
-</section>
-
-<!-- ─── DEMO ─── -->
-<section class="demo-section" id="demo">
-	<div class="demo-inner reveal" data-reveal>
-		<p class="label">Prototype demo</p>
-		<h2>See it in action</h2>
-		<p>
-			Watch how the robot responds to obstacles and supports navigation in a real-world scenario.
-		</p>
-		<div class="video-frame">
-			<div class="video-placeholder">Video preview area</div>
-		</div>
 	</div>
 </section>
 
@@ -166,9 +261,9 @@
 <section class="split split--img-right" id="cost">
 	<div class="split__text reveal" data-reveal>
 		<p class="label">Why it matters</p>
-		<h2>Guide dogs cost<br /><em>over $20,000</em></h2>
+		<h2 data-scale-in>Guide dogs cost<br /><em><span data-count-up="20000" data-count-prefix="over $">over $20,000</span></em></h2>
 		<p>
-			A professionally trained guide dog can exceed $20,000 USD — and availability is limited.
+			A professionally trained guide dog can exceed $20,000 USD and availability is limited.
 			This project explores an assistive robotics approach to provide scalable, affordable
 			guidance support.
 		</p>
@@ -188,10 +283,10 @@
 	</div>
 	<div class="split__text reveal" data-reveal style="--reveal-delay:120ms">
 		<p class="label">Impact</p>
-		<h2>Built to support<br />independence</h2>
+		<h2 data-scale-in>Built to support<br />independence</h2>
 		<p>
-			Our goal is to make assistive mobility more intelligent, responsive, and accessible —
-			through robotics and AI that adapt to real-world conditions.
+			Our goal is to make assistive mobility more intelligent, responsive, and accessible
+			through robotics and AI that adapt to real world conditions.
 		</p>
 	</div>
 </section>
