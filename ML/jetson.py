@@ -119,13 +119,26 @@ pasarselo al LLM con todo y la pregunta, el contexto
 """
 def thread_voice_query():
     from voice import listen, speak
-    from llm import infer_text
+    from llm import routing, inference_text, inference_images
+    import tempfile, cv2
 
     while True:
-        transcription = listen()  # We listen to the user 
-        if transcription:         
-            response = infer_text(transcription) # We do an inference on the LLM on the transcription of the audio
-            speak(response) # we SPEAK the answer of the LLM
+        transcription = listen()
+        if not transcription:
+            continue
+
+        route = routing(transcription)
+
+        if route == "visual":
+            img_array = request_image_from_jetson()
+            img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+            with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as f:
+                cv2.imwrite(f.name, img)
+                result = inference_images(f.name, transcription)
+        else:
+            result = inference_text(transcription)
+
+        speak(result)
 
 
 # DEFINE JetsonNano thread 3

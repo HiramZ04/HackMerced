@@ -50,7 +50,7 @@ def inference_text(query):
         }
     ])
     push_transcription("user", query)
-    push_transcription("robot", response)
+    push_transcription("robot", response['message']['content'])
     return response['message']['content']
 
 
@@ -71,5 +71,5 @@ def inference_images(img, query):
         }
     ])
     push_transcription("user", query)
-    push_transcription("robot", response)
+    push_transcription("robot", response['message']['content'])
     return response['message']['content']
