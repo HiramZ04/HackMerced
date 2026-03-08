@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HackMerced — Visual Assistant Robot</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Bebas+Neue&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.27.0/plotly.min.js"></script>
+  <style>
+    :root {
+      --bg:       #080b0f;
+      --panel:    #0d1117;
+      --border:   #1e2d3d;
+      --accent:   #00e5ff;
+      --red:      #ff3b3b;
+      --yellow:   #ffb800;
+      --green:    #00e676;
+      --text:     #cdd9e5;
+      --muted:    #4a5568;
+      --font-ui:  'IBM Plex Mono', monospace;
+      --font-hero:'Bebas Neue', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+    }
+
+    .logo {
+      font-family: var(--font-hero);
+      font-size: 1.5rem;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: var(--text);
+    }
+
+    .live-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    /* ── Grid ── */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 1px;
+      background: var(--border);
+      flex: 1;
+    }
+
+    .panel {
+      background: var(--panel);
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-height: 320px;
+    }
+
+    .panel-title {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+
+    /* ── Camera panel ── */
+    #camera-frame {
+      flex: 1;
+      background: #050810;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      min-height: 220px;
+    }
+
+    #camera-frame img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .no-signal {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+    }
+
+    .scan-line {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      animation: scan 3s linear infinite;
+      opacity: 0.4;
+    }
+
+    @keyframes scan {
+      0%   { top: 0%; }
+      100% { top: 100%; }
+    }
+
+    /* ── LiDAR panel ── */
+    #lidar-plot {
+      flex: 1;
+      min-height: 220px;
+    }
+
+    /* ── Alerts panel ── */
+    .alert-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .alert-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      font-size: 0.75rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-8px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .alert-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .alert-item.red    { border-color: rgba(255,59,59,0.3);  background: rgba(255,59,59,0.05); }
+    .alert-item.yellow { border-color: rgba(255,184,0,0.3);  background: rgba(255,184,0,0.05); }
+    .alert-item.green  { border-color: rgba(0,230,118,0.3);  background: rgba(0,230,118,0.05); }
+
+    .alert-dot.red    { background: var(--red); }
+    .alert-dot.yellow { background: var(--yellow); }
+    .alert-dot.green  { background: var(--green); }
+
+    .alert-time  { color: var(--muted); font-size: 0.65rem; }
+    .alert-label { flex: 1; }
+    .alert-dist  { color: var(--muted); font-size: 0.65rem; }
+
+    /* ── Transcription panel ── */
+    .transcript-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .transcript-item {
+      font-size: 0.8rem;
+      line-height: 1.5;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .transcript-role {
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.2rem;
+    }
+
+    .transcript-role.user  { color: var(--accent); }
+    .transcript-role.robot { color: var(--yellow); }
+
+    .transcript-text {
+      color: var(--text);
+    }
+
+    /* ── Footer ── */
+    footer {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      padding: 0.6rem 1.5rem;
+      border-top: 1px solid var(--border);
+      background: var(--panel);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stat-label { color: var(--muted); }
+
+    .stat-value { color: var(--text); }
+
+    .stat-value.ok   { color: var(--green); }
+    .stat-value.fail { color: var(--red); }
+
+    #mode-badge {
+      margin-left: auto;
+      padding: 0.2rem 0.75rem;
+      border: 1px solid var(--accent);
+      border-radius: 2px;
+      color: var(--accent);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">VISUAL ASSISTANT ROBOT</div>
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      LIVE
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <!-- Camera -->
+    <div class="panel">
+      <div class="panel-title">Camera + Detections</div>
+      <div id="camera-frame">
+        <div class="scan-line"></div>
+        <span class="no-signal" id="no-signal-msg">WAITING FOR SIGNAL</span>
+        <img id="camera-img" src="" style="display:none"/>
+      </div>
+    </div>
+
+    <!-- LiDAR -->
+    <div class="panel">
+      <div class="panel-title">LiDAR Map 2D</div>
+      <div id="lidar-plot"></div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="panel">
+      <div class="panel-title">Alert History</div>
+      <div class="alert-list" id="alert-list">
+        <div style="color:var(--muted);font-size:0.7rem">No alerts yet</div>
+      </div>
+    </div>
+
+    <!-- Transcription -->
+    <div class="panel">
+      <div class="panel-title">LLM Transcription</div>
+      <div class="transcript-list" id="transcript-list">
+        <div style="color:var(--muted);font-size:0.7rem">Waiting for conversation...</div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="stat">
+      <span class="stat-label">Jetson:</span>
+      <span class="stat-value" id="jetson-status">—</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">FPS:</span>
+      <span class="stat-value" id="fps-val">—</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Latency:</span>
+      <span class="stat-value" id="latency-val">—</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Buffer:</span>
+      <span class="stat-value" id="buffer-count">—</span>
+    </div>
+    <div id="mode-badge">IDLE</div>
+  </footer>
+
+  <script>
+    // ── LiDAR plot init ──────────────────────────────────────────────────────
+    Plotly.newPlot('lidar-plot', [{
+      x: [], y: [],
+      mode: 'markers',
+      marker: { color: '#00e5ff', size: 5, opacity: 0.8 },
+      type: 'scatter'
+    }, {
+      x: [0], y: [0],  // robot center
+      mode: 'markers',
+      marker: { color: '#ffb800', size: 12, symbol: 'square' },
+      type: 'scatter'
+    }], {
+      paper_bgcolor: '#0d1117',
+      plot_bgcolor:  '#080b0f',
+      xaxis: { range: [-5, 5], color: '#4a5568', gridcolor: '#1e2d3d', zeroline: false },
+      yaxis: { range: [-5, 5], color: '#4a5568', gridcolor: '#1e2d3d', zeroline: false },
+      margin: { t: 10, b: 30, l: 40, r: 10 },
+      showlegend: false,
+      height: 240,
+    }, { responsive: true, displayModeBar: false });
+
+    // ── WebSocket ────────────────────────────────────────────────────────────
+    const ws = new WebSocket(`ws://${location.hostname}:8000/ws`);
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      updateCamera(data.last_image_b64);
+      updateLidar(data.lidar_points);
+      updateAlerts(data.alerts);
+      updateTranscript(data.transcription);
+      updateFooter(data);
+    };
+
+    ws.onclose = () => {
+      document.querySelector('.live-dot').style.background = 'var(--red)';
+    };
+
+    // ── Camera ───────────────────────────────────────────────────────────────
+    function updateCamera(b64) {
+      const img = document.getElementById('camera-img');
+      const msg = document.getElementById('no-signal-msg');
+      if (b64) {
+        img.src = `data:image/jpeg;base64,${b64}`;
+        img.style.display = 'block';
+        msg.style.display = 'none';
+      }
+    }
+
+    // ── LiDAR ────────────────────────────────────────────────────────────────
+    function updateLidar(points) {
+      if (!points || points.length === 0) return;
+      Plotly.restyle('lidar-plot', {
+        x: [points.map(p => p.x)],
+        y: [points.map(p => p.y)]
+      }, [0]);
+    }
+
+    // ── Alerts ───────────────────────────────────────────────────────────────
+    function updateAlerts(alerts) {
+      if (!alerts || alerts.length === 0) return;
+      const el = document.getElementById('alert-list');
+      el.innerHTML = alerts.map(a => `
+        <div class="alert-item ${a.level}">
+          <div class="alert-dot ${a.level}"></div>
+          <span class="alert-time">${a.time}</span>
+          <span class="alert-label">${a.tipo}</span>
+          <span class="alert-dist">${a.distancia}m</span>
+        </div>
+      `).join('');
+    }
+
+    // ── Transcription ─────────────────────────────────────────────────────────
+    function updateTranscript(items) {
+      if (!items || items.length === 0) return;
+      const el = document.getElementById('transcript-list');
+      el.innerHTML = items.map(i => `
+        <div class="transcript-item">
+          <div class="transcript-role ${i.role}">${i.role === 'user' ? '🎤 USER' : '🤖 ROBOT'}</div>
+          <div class="transcript-text">${i.text}</div>
+        </div>
+      `).join('');
+    }
+
+    // ── Footer ───────────────────────────────────────────────────────────────
+    function updateFooter(data) {
+      const jetson = document.getElementById('jetson-status');
+      jetson.textContent    = data.jetson_ok ? '✓ ONLINE' : '✗ OFFLINE';
+      jetson.className      = `stat-value ${data.jetson_ok ? 'ok' : 'fail'}`;
+      document.getElementById('fps-val').textContent     = data.fps || '—';
+      document.getElementById('latency-val').textContent = data.latency_ms ? `${data.latency_ms}ms` : '—';
+      document.getElementById('buffer-count').textContent = data.vectors ? `${data.vectors.length} objs` : '0';
+      document.getElementById('mode-badge').textContent  = data.mode || 'IDLE';
+    }
+  </script>
+</body>
+</html>

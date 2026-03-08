@@ -1,6 +1,7 @@
 import time
 from voice import speak
 import threading
+from server import push_alert
 
 
 """
@@ -91,3 +92,4 @@ def alerts_constant(tipo, distancia): # We pass the parameter to the function on
             global_priority = 99               # Reset after speaking ONLY AFTER SPEAKING, another thread can be running in the back while this one is running
         last_time_alert[tipo] = now         # lAST ALERT FOR THIS TYPE OF OBJECT WAS AT THIS TIME (we save it)
    
+    push_alert(tipo, distancia, level="red")

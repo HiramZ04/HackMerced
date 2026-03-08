@@ -3,6 +3,7 @@ import time
 from jetson import connect_jetson, thread_vectors, thread_scene_change, get_last_text, thread_voice_query
 from alerts import alerts_constant
 from voice import speak
+import uvicorn
 
 """
 ## What is this file about? ##

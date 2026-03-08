@@ -1,6 +1,7 @@
 from ollama import chat
 from ollama import ChatResponse
 from jetson import get_buffer_text
+from server import push_transcription
 
 """
 ## What is this file about? ##
@@ -48,7 +49,10 @@ def inference_text(query):
             'content': f'Here is some context of the Lidar measurements: {context}\n\n{query}'
         }
     ])
+    push_transcription("user", query)
+    push_transcription("robot", response)
     return response['message']['content']
+
 
 
 
@@ -66,4 +70,6 @@ def inference_images(img, query):
             'images': [img]
         }
     ])
+    push_transcription("user", query)
+    push_transcription("robot", response)
     return response['message']['content']
