@@ -1,1 +1,8 @@
 ML/__pycache__/
+node_modules/
+.svelte-kit/
+build/
+dist/
+.env
+.env.*
+*.local
