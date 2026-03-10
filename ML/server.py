@@ -8,6 +8,18 @@ from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from jetson import get_buffer_text, get_buffer_images
 
+
+
+"""
+This was just a preliminar and test file, for the dashboard in html we intended to use in the live demo
+we ended up not using it 
+
+"""
+
+
+
+
+
 app = FastAPI()
 
 app.add_middleware(

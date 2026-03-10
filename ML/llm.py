@@ -14,6 +14,7 @@ the user is making.
 
 # This system prompt is really important since it would actually help the model understand what is his function and not exceed certain word limits,
 # Setup the alerts that are not hardcoded without LLM and specify how to answer or give the alerts.
+
 system_prompt = """
 You are the voice assistant of a robot that guides visually impaired people.
 Be concise, max 2 sentences. Never invent objects or distances.

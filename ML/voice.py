@@ -17,7 +17,8 @@ and the text the LLM generates we have to reproduce it in audio since we are wor
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-voice = PiperVoice.load(os.path.join(BASE_DIR, "en_US-amy-medium.onnx"))
+voice = PiperVoice.load(os.path.join(BASE_DIR, "en_US-amy-medium.onnx")) # this is the voice in ONNX serialized model
+
 # Load Whisper once — not every time we run the function for lattency purposes 
 whisper_model = WhisperModel("large-v3", device="cuda")
 
@@ -34,9 +35,9 @@ def speak(msg):
     wav_buffer.seek(0)
     with wave.open(wav_buffer) as wav_file:
         audio_array = np.frombuffer(wav_file.readframes(wav_file.getnframes()), dtype=np.int16)
-        samplerate = wav_file.getframerate()  # ← ya tienes samplerate aquí
+        samplerate = wav_file.getframerate() 
 
-    audio_array = (audio_array * 2.0).clip(-32768, 32767).astype(np.int16)
+    audio_array = (audio_array * 2.0).clip(-32768, 32767).astype(np.int16)  # We make it louder
     sd.play(audio_array, samplerate=samplerate)
     sd.wait()
 
@@ -59,8 +60,8 @@ def listen(duration=5, samplerate=16000):
     segments, _ = whisper_model.transcribe(
         audio_np,
         language="en",
-        vad_filter=True,   # ignora silencios automáticamente
-        beam_size=1        # más rápido para tiempo real
+        vad_filter=True,   
+        beam_size=1        
     )
 
     transcription = " ".join([seg.text for seg in segments]).strip()
