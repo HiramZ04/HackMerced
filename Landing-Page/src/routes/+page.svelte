@@ -9,11 +9,6 @@
 
 	const slides: CarouselSlide[] = [
 		{
-			title: 'Team Navis at HackMerced',
-			description: 'Our team with the robot prototype during HackMerced.',
-			imageUrl: '/CarouselImages/MLH3personoHORIZONTAL.jpeg'
-		},
-		{
 			title: 'Prototype navigation setup',
 			description: 'Front view of the robot with the simulator in the background.',
 			imageUrl: '/CarouselImages/RobotandSimulator.jpeg'
@@ -155,8 +150,8 @@
 				<span class="hero-line"><em>intelligent&nbsp;robotics</em></span>
 			</h1>
 			<p class="hero-sub">
-				Safer, more confident movement in unfamiliar environments powered by real-time obstacle
-				detection.
+				Supporting safer, more confident mobility for blind and visually impaired users in
+				unfamiliar environments through real-time obstacle detection and assistive robotics.
 			</p>
 			<nav class="hero-nav" aria-label="Jump to section">
 				<a href="#problem">Problem</a>
@@ -164,6 +159,7 @@
 				<a href="#demo">Demo</a>
 				<a href="#cost">Cost context</a>
 				<a href="#impact">Impact</a>
+				<a href="#about">About us</a>
 			</nav>
 		</div>
 
@@ -211,7 +207,8 @@
 		<p class="label">Prototype demo</p>
 		<h2 data-scale-in>See it in action</h2>
 		<p>
-			Watch how the robot responds to obstacles and supports navigation in a real world scenario.
+			Watch the prototype move and demonstrate an assistive navigation workflow
+			in a real-world test scenario.
 		</p>
 		<div class="video-frame">
 			<video autoplay muted loop playsinline preload="metadata" poster="/CarouselImages/RobotandSimulator.jpeg">
@@ -229,9 +226,10 @@
 		<p class="label">The problem</p>
 		<h2 data-scale-in>Mobility should not<br />depend on uncertainty</h2>
 		<p>
-			Navigating unfamiliar environments is challenging and stressful for blind or visually
-			impaired individuals. Traditional aids leave gaps in spatial awareness that can compromise
-			safety and independence.
+			Navigating unfamiliar environments can be stressful and unsafe for blind and visually
+			impaired individuals. Traditional mobility aids remain essential, but they may leave gaps
+			in obstacle awareness and short-range environmental feedback that affect confidence and
+			independence.
 		</p>
 	</div>
 	<div class="split__media split__media--png reveal" data-reveal style="--reveal-delay:120ms">
@@ -251,8 +249,9 @@
 		<p class="label">How it works</p>
 		<h2 data-scale-in>Detect. Decide.<br />Guide.</h2>
 		<p>
-			The robot senses nearby obstacles in real time, analyzes the safest path, and provides
-			haptic and audio feedback to support guided mobility with no screen required.
+			The robot detects nearby obstacles in real time, estimates safe navigation responses,
+			and delivers accessible feedback designed to support screen-free guided mobility for blind
+			and visually impaired users.
 		</p>
 	</div>
 </section>
@@ -288,6 +287,47 @@
 			Our goal is to make assistive mobility more intelligent, responsive, and accessible
 			through robotics and AI that adapt to real world conditions.
 		</p>
+	</div>
+</section>
+
+<section class="split split--img-right" id="about">
+	<div class="split__text reveal" data-reveal>
+		<p class="label">About us</p>
+		<h2 data-scale-in>Built at HackMerced<br />by Team Navis</h2>
+		<p>
+			Navis was developed during HackMerced as a prototype focused on assistive mobility for
+			blind and visually impaired users. Our team combined robotics, obstacle detection, and
+			accessible design to explore a practical navigation support system built in a hackathon
+			setting.
+		</p>
+	</div>
+	<div class="split__media reveal" data-reveal style="--reveal-delay:120ms">
+		<img src="/CarouselImages/MLH3personoHORIZONTAL.jpeg" alt="Team Navis at HackMerced" />
+	</div>
+</section>
+
+<section class="cta-section reveal" data-reveal>
+	<div class="cta-card">
+		<p class="label">Project links</p>
+		<h2 data-scale-in>Interested in Navis?</h2>
+		<p>
+			Explore the project repository and see how Team Navis approached assistive robotics,
+			prototyping, and accessibility at HackMerced.
+		</p>
+
+		<div class="cta-actions">
+			<a
+				class="cta-button cta-button--primary"
+				href="https://github.com/HiramZ04/HackMerced"
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				View GitHub
+			</a>
+			<a class="cta-button cta-button--secondary" href="#demo">
+				Watch Demo
+			</a>
+		</div>
 	</div>
 </section>
 
