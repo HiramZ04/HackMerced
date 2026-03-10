@@ -214,13 +214,14 @@
 			Watch how the robot responds to obstacles and supports navigation in a real world scenario.
 		</p>
 		<div class="video-frame">
-			<video controls playsinline preload="metadata" poster="/CarouselImages/robot.JPG">
+			<video controls playsinline preload="metadata" poster="/CarouselImages/RobotandSimulator.jpeg">
 				<source src="/videos/demo.mp4" type="video/mp4" />
 				Your browser does not support the video tag.
 			</video>
 		</div>
 	</div>
 </section>
+
 
 <!-- ─── PROBLEM ─── -->
 <section class="split split--img-right" id="problem">
