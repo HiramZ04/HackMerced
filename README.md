@@ -8,7 +8,7 @@
 
 ## What is this?
 
-A wearable/mobile robot that acts as the eyes of a visually impaired person. The robot detects objects and obstacles in its path, understands the environment through a camera, and communicates everything to the user through natural voice conversation — hands free, in real time.
+A blind-assistive mobile robot that acts as the eyes of a visually impaired person. The robot detects objects and obstacles in its path (and gives alerts), understands the environment through a camera, and communicates everything to the user through natural voice conversation with LLMs.
 
 The user can ask questions like *"Where am I?"*, *"What's in front of me?"*, or *"Can I keep walking?"* and the robot responds instantly. It also proactively warns the user of nearby dangers without being asked.
 
@@ -23,7 +23,7 @@ Jetson Nano (on the robot)
     └── TCP Socket → streams data to the backend
 
 Backend (Python, on laptop/server)
-    ├── Receives object vectors every 100ms → context buffer
+    ├── Receives object vectors every 100ms → context buffer  [Better latency]
     ├── Hard-coded proximity alerts → speaks warnings instantly
     ├── Whisper STT → listens to user voice queries
     ├── Router → decides LLM or VLM based on query type
@@ -36,7 +36,7 @@ Frontend (SvelteKit)
     └── Landing page + project information
 
 Dashboard (HTML + Plotly)
-    └── Live demo display for judges
+    └── Live demo display for judges [WAS NOT USED]
 ```
 
 ---
@@ -98,11 +98,11 @@ This keeps WiFi bandwidth minimal — no images are streamed continuously, only 
 | Vision LLM | llava:7b via Ollama | ~5GB VRAM, on-demand |
 | Text to Speech | Piper TTS (en_US-amy-medium) | Runs on CPU |
 
-**Total GPU usage: ~8.5GB VRAM** (RTX 4090 16GB)
+This was tested in a (RTX 4090 16GB VRAM)
 
 ---
 
-## Simulated RAG
+## Simulated RAG [FUTURE FEATURES]
 
 User-specific personal context is injected into the system prompt to simulate a RAG system:
 - Medications and schedule

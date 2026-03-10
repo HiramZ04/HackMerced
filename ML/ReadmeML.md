@@ -59,7 +59,7 @@ Backend Python
 | `faster-whisper large-v3` | Speech to text | ~1.5GB |
 | `Piper TTS (en_US-amy-medium)` | Text to speech | CPU |
 
-**Total: ~8.5GB VRAM** (tested on RTX 4090 16GB)
+**Total: ~8.5GB VRAM APROX** (tested on RTX 4090 16GB)
 
 ---
 
@@ -108,7 +108,7 @@ Dashboard available at `http://localhost:8000`
 
 ---
 
-## Dashboard
+## Dashboard [THIS WAS NOT USED]
 
 Live demo dashboard built with FastAPI + WebSockets + Plotly. Displays:
 - 📷 Webcam feed with bounding boxes
