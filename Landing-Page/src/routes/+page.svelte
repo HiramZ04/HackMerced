@@ -9,19 +9,19 @@
 
 	const slides: CarouselSlide[] = [
 		{
-			title: 'Prototype navigation scene',
-			description: 'Add your first project photo here.',
-			imageUrl: '/CarouselImages/robot.JPG'
+			title: 'Team Navis at HackMerced',
+			description: 'Our team with the robot prototype during HackMerced.',
+			imageUrl: '/CarouselImages/MLH3personoHORIZONTAL.jpeg'
 		},
 		{
-			title: 'Obstacle detection testing',
-			description: 'Add a second photo of the robot in action.',
-			imageUrl: ''
+			title: 'Prototype navigation setup',
+			description: 'Front view of the robot with the simulator in the background.',
+			imageUrl: '/CarouselImages/RobotandSimulator.jpeg'
 		},
 		{
-			title: 'Guided mobility demo',
-			description: 'Add a third photo for the final preview.',
-			imageUrl: ''
+			title: 'Side view of the prototype',
+			description: 'A closer look at the robot hardware and structure.',
+			imageUrl: '/CarouselImages/robotsideview.jpeg'
 		}
 	];
 
@@ -50,21 +50,6 @@
 
 	onMount(() => {
 		const autoSlide = window.setInterval(nextSlide, 5000);
-
-		/* ── 1. Hero parallax scale ── */
-		const heroCarousel = document.querySelector<HTMLElement>('.hero-carousel');
-		const heroSection = document.querySelector<HTMLElement>('.hero');
-
-		const handleScroll = () => {
-			if (!heroCarousel || !heroSection) return;
-			const rect = heroSection.getBoundingClientRect();
-			const h = heroSection.offsetHeight;
-			if (rect.bottom <= 0) return;
-			const progress = Math.max(0, Math.min(1, -rect.top / h));
-			heroCarousel.style.transform = `scale(${1.05 - 0.05 * progress})`;
-		};
-		window.addEventListener('scroll', handleScroll, { passive: true });
-		handleScroll();
 
 		/* ── 2. Hero content stagger ── */
 		const heroContent = document.querySelector<HTMLElement>('.hero-content');
@@ -143,7 +128,6 @@
 
 		return () => {
 			window.clearInterval(autoSlide);
-			window.removeEventListener('scroll', handleScroll);
 			revealObserver.disconnect();
 			heroObserver.disconnect();
 			scaleObserver.disconnect();
@@ -163,37 +147,49 @@
 
 <!-- ─── HERO ─── -->
 <section class="hero">
-	<div class="hero-carousel">
-		{#key currentSlide}
-			{#if slides[currentSlide].imageUrl}
-				<img
-					class="hero-bg"
-					src={slides[currentSlide].imageUrl}
-					alt={slides[currentSlide].title}
-				/>
-			{:else}
-				<div class="hero-bg hero-bg--placeholder" aria-hidden="true"></div>
-			{/if}
-		{/key}
-	</div>
+	<div class="hero-shell">
+		<div class="hero-content">
+			<p class="label">Navis</p>
+			<h1>
+				<span class="hero-line">Guiding mobility through</span><br />
+				<span class="hero-line"><em>intelligent&nbsp;robotics</em></span>
+			</h1>
+			<p class="hero-sub">
+				Safer, more confident movement in unfamiliar environments powered by real-time obstacle
+				detection.
+			</p>
+			<nav class="hero-nav" aria-label="Jump to section">
+				<a href="#problem">Problem</a>
+				<a href="#how">How it works</a>
+				<a href="#demo">Demo</a>
+				<a href="#cost">Cost context</a>
+				<a href="#impact">Impact</a>
+			</nav>
+		</div>
 
-	<div class="hero-content">
-		<p class="label">Navis</p>
-		<h1>
-			<span class="hero-line">Guiding mobility through</span><br />
-			<span class="hero-line"><em>intelligent&nbsp;robotics</em></span>
-		</h1>
-		<p class="hero-sub">
-			Safer, more confident movement in unfamiliar environments powered by real-time obstacle
-			detection.
-		</p>
-		<nav class="hero-nav" aria-label="Jump to section">
-			<a href="#problem">Problem</a>
-			<a href="#how">How it works</a>
-			<a href="#demo">Demo</a>
-			<a href="#cost">Cost context</a>
-			<a href="#impact">Impact</a>
-		</nav>
+		<div class="hero-visual">
+			{#key currentSlide}
+				{#if slides[currentSlide].imageUrl}
+					<div class="hero-photo-card">
+						<img
+							class="hero-photo"
+							src={slides[currentSlide].imageUrl}
+							alt={slides[currentSlide].title}
+						/>
+						<div class="hero-photo-caption">
+							<h3>{slides[currentSlide].title}</h3>
+							<p>{slides[currentSlide].description}</p>
+						</div>
+					</div>
+				{:else}
+					<div class="hero-photo-card hero-photo-card--placeholder" aria-hidden="true">
+						<div class="hero-placeholder-content">
+							<span>Team / prototype visual</span>
+						</div>
+					</div>
+				{/if}
+			{/key}
+		</div>
 	</div>
 
 	<div class="hero-dots" aria-label="Carousel navigation">
@@ -217,9 +213,12 @@
 		<p>
 			Watch how the robot responds to obstacles and supports navigation in a real world scenario.
 		</p>
-		<!-- <div class="video-frame">
-			<div class="video-placeholder">Video preview area</div>
-		</div> -->
+		<div class="video-frame">
+			<video controls playsinline preload="metadata" poster="/CarouselImages/robot.JPG">
+				<source src="/videos/demo.mp4" type="video/mp4" />
+				Your browser does not support the video tag.
+			</video>
+		</div>
 	</div>
 </section>
 
